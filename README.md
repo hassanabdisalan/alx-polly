@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PollApp - Modern Polling Application
+
+A modern polling application built with Next.js, TypeScript, and Shadcn UI components. Create polls, vote on them, and see real-time results.
+
+## Features
+
+- **User Authentication**: Sign up and sign in functionality
+- **Create Polls**: Design custom polls with multiple options
+- **Vote on Polls**: Participate in polls with secure voting
+- **Real-time Results**: See live voting results with charts
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Modern UI**: Built with Shadcn UI components
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Shadcn UI
+- **Icons**: Lucide React
+- **State Management**: React Hooks
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── auth/              # Authentication pages
+│   │   ├── login/         # Login page
+│   │   └── register/      # Registration page
+│   ├── polls/             # Poll-related pages
+│   │   ├── page.tsx       # Polls listing
+│   │   └── create/        # Create poll page
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
+├── components/            # Reusable components
+│   ├── auth/              # Authentication components
+│   │   ├── login-form.tsx
+│   │   └── register-form.tsx
+│   ├── layout/            # Layout components
+│   │   └── navigation.tsx
+│   ├── polls/             # Poll-related components
+│   │   ├── poll-card.tsx
+│   │   └── create-poll-form.tsx
+│   └── ui/                # Shadcn UI components
+│       ├── button.tsx
+│       ├── card.tsx
+│       └── input.tsx
+├── lib/                   # Utility functions
+│   └── utils.ts           # Shadcn utility functions
+└── types/                 # TypeScript type definitions
+    ├── auth.ts            # Authentication types
+    └── poll.ts            # Poll-related types
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd alx-polly
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features Overview
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Authentication
+- User registration with email and password
+- User login with form validation
+- Secure authentication flow (to be implemented)
 
-## Deploy on Vercel
+### Poll Management
+- Create polls with custom titles and descriptions
+- Add multiple voting options
+- Dynamic option management (add/remove options)
+- Form validation and error handling
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Voting System
+- Interactive voting interface
+- Real-time vote counting
+- Visual progress bars for results
+- Prevention of duplicate votes (to be implemented)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### User Interface
+- Responsive design for all screen sizes
+- Modern, clean UI with Shadcn components
+- Intuitive navigation
+- Loading states and feedback
+
+## TODO: Upcoming Features
+
+- [ ] Backend API integration
+- [ ] Database setup (PostgreSQL/MongoDB)
+- [ ] User authentication with JWT
+- [ ] Real-time updates with WebSockets
+- [ ] Poll sharing functionality
+- [ ] User profiles and poll history
+- [ ] Advanced poll types (multiple choice, ranked voting)
+- [ ] Poll analytics and insights
+- [ ] Email notifications
+- [ ] Dark mode toggle
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support and questions, please open an issue in the repository.
