@@ -20,6 +20,7 @@ export interface CreatePollData {
   title: string;
   description: string;
   options: string[];
+  expiresAt?: string;
 }
 
 export interface VoteData {

@@ -1,26 +1,36 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/components/ui/use-toast"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // TODO: Implement authentication logic
-    console.log("Login attempt:", { email, password })
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      toast.error(error.message)
+    } else {
+      router.push("/polls")
+    }
+
+    setIsLoading(false)
   }
 
   return (

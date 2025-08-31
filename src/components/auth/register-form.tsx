@@ -1,18 +1,22 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/components/ui/use-toast"
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
     confirmPassword: ""
   })
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -24,14 +28,26 @@ export function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // TODO: Implement registration logic
-    console.log("Registration attempt:", formData)
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match")
       setIsLoading(false)
-    }, 1000)
+      return
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    })
+
+    if (error) {
+      toast.error(error.message)
+    } else {
+      toast.success("Check your email for a confirmation link.")
+      router.push("/auth/login")
+    }
+
+    setIsLoading(false)
   }
 
   return (
@@ -44,20 +60,6 @@ export function RegisterForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
-              Full Name
-            </label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
               Email
