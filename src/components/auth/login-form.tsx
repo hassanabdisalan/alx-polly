@@ -8,6 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/components/ui/use-toast"
 
+/**
+ * Renders a login form component.
+ *
+ * @returns The login form component.
+ */
 export function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -15,10 +20,16 @@ export function LoginForm() {
   const router = useRouter()
   const { toast } = useToast()
 
+  /**
+   * Handles the form submission for user login.
+   *
+   * @param e - The form event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
+    // Attempt to sign in with the provided email and password.
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -27,6 +38,7 @@ export function LoginForm() {
     if (error) {
       toast.error(error.message)
     } else {
+      // Redirect to the polls page on successful login.
       router.push("/polls")
     }
 

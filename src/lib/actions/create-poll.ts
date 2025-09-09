@@ -5,8 +5,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CreatePollData } from "@/types/poll";
 
+/**
+ * Creates a new poll.
+ *
+ * @param formData - The data for the poll to create.
+ * @returns An object with the result of the operation.
+ */
 export async function createPoll(formData: CreatePollData) {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   
   try {

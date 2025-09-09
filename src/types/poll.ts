@@ -1,29 +1,32 @@
 export interface PollOption {
   id: string;
+  poll_id: string;
   text: string;
-  votes: number;
+  created_at: string;
 }
 
 export interface Poll {
   id: string;
   title: string;
-  description: string;
-  options: PollOption[];
-  totalVotes: number;
-  createdAt: string;
-  createdBy: string;
-  isActive?: boolean;
-  expiresAt?: string;
+  description: string | null;
+  created_by: string;
+  created_at: string;
+  expires_at: string | null;
+  is_active: boolean;
+}
+
+export interface Vote {
+  id: string;
+  poll_id: string;
+  option_id: string;
+  user_id: string | null;
+  voter_ip: string | null;
+  created_at: string;
 }
 
 export interface CreatePollData {
   title: string;
-  description: string;
-  options: string[];
-  expiresAt?: string;
-}
-
-export interface VoteData {
-  pollId: string;
-  optionId: string;
+  description?: string;
+  options: { text: string }[];
+  expires_at?: string;
 }

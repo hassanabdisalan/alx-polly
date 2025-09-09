@@ -1,104 +1,109 @@
 "use client"
-
+ 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/use-toast"
+import { createPoll } from "@/lib/actions/create-poll"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { createPoll } from "@/lib/actions/create-poll"
-import { useToast } from "@/components/ui/use-toast"
-import { CreatePollData } from "@/types/poll"
-
+ 
+/**
+ * Renders a form for creating a new poll.
+ *
+ * @returns The create poll form component.
+ */
 export function CreatePollForm() {
   const router = useRouter()
   const { toast } = useToast()
-  const [formData, setFormData] = useState<CreatePollData>({
-    title: "",
-    description: "",
-    options: ["", ""]
-  })
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [options, setOptions] = useState([{ text: "" }, { text: "" }])
   const [isLoading, setIsLoading] = useState(false)
-  const [expiresAt, setExpiresAt] = useState("")
-
+ 
+  /**
+   * Handles the change event for the option inputs.
+   *
+   * @param index - The index of the option to update.
+   * @param value - The new value of the option.
+   */
   const handleOptionChange = (index: number, value: string) => {
-    const newOptions = [...formData.options]
-    newOptions[index] = value
-    setFormData(prev => ({ ...prev, options: newOptions }))
+    const newOptions = [...options]
+    newOptions[index].text = value
+    setOptions(newOptions)
   }
-
+ 
+  /**
+   * Adds a new option to the poll.
+   */
   const addOption = () => {
-    setFormData(prev => ({
-      ...prev,
-      options: [...prev.options, ""]
-    }))
+    setOptions([...options, { text: "" }])
   }
-
+ 
+  /**
+   * Removes an option from the poll.
+   *
+   * @param index - The index of the option to remove.
+   */
   const removeOption = (index: number) => {
-    if (formData.options.length > 2) {
-      const newOptions = formData.options.filter((_, i) => i !== index)
-      setFormData(prev => ({ ...prev, options: newOptions }))
+    if (options.length > 2) {
+      const newOptions = options.filter((_, i) => i !== index)
+      setOptions(newOptions)
     }
   }
-
+ 
+  /**
+   * Handles the form submission for creating a new poll.
+   *
+   * @param e - The form event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const validOptions = options.map(o => o.text.trim()).filter(Boolean)
+    if (!title.trim() || validOptions.length < 2) {
+      toast.error("Invalid form", {
+        description: "Please provide a title and at least two options.",
+      })
+      return
+    }
+
     setIsLoading(true)
-    
+
     try {
-      // Validate form data
-      if (!formData.title.trim()) {
-        throw new Error("Poll title is required")
-      }
-      
-      const validOptions = formData.options.filter(opt => opt.trim() !== "")
-      if (validOptions.length < 2) {
-        throw new Error("At least two poll options are required")
-      }
-      
-      const result = await createPoll({
-        ...formData,
+      // Create the poll.
+      const res = await createPoll({
+        title: title.trim(),
+        description: description.trim() || undefined,
         options: validOptions,
-        expiresAt: expiresAt || undefined
-      })
-      
-      if (result.success) {
-        toast({
-          title: "Success!",
-          description: "Your poll has been created.",
+      } as any)
+
+      if (!res?.success) {
+        toast.error("Failed to create poll", {
+          description: res?.error || "An unexpected error occurred.",
         })
-        
-        // Reset form
-        setFormData({
-          title: "",
-          description: "",
-          options: ["", ""]
-        })
-        setExpiresAt("")
-        
-        // Redirect to the new poll
-        router.push(`/polls/${result.pollId}`)
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to create poll",
-          variant: "destructive",
-        })
+        setIsLoading(false)
+        return
       }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "An unexpected error occurred",
-        variant: "destructive",
+
+      toast.success("Poll created", {
+        description: "Your poll was created successfully.",
       })
-      console.error("Error creating poll:", error)
+
+      // Redirect to the polls page.
+      router.push("/polls")
+    } catch (err: any) {
+      toast.error("Error", {
+        description: err?.message || "Something went wrong.",
+      })
     } finally {
       setIsLoading(false)
     }
   }
-
-  const isValid = formData.title.trim() && 
-    formData.options.filter(opt => opt.trim()).length >= 2
-
+ 
+  // Require a non-empty title and at least two non-empty options before enabling submit
+  const isValid = title.trim().length > 0 && options.filter(opt => opt.text.trim().length > 0).length >= 2
+ 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -116,8 +121,8 @@ export function CreatePollForm() {
             <Input
               id="title"
               placeholder="Enter poll title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
@@ -129,21 +134,8 @@ export function CreatePollForm() {
             <Input
               id="description"
               placeholder="Enter poll description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="expiresAt" className="text-sm font-medium">
-              Expiration Date (Optional)
-            </label>
-            <Input
-              id="expiresAt"
-              type="datetime-local"
-              value={expiresAt}
-              onChange={(e) => setExpiresAt(e.target.value)}
-              min={new Date().toISOString().slice(0, 16)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           
@@ -161,11 +153,11 @@ export function CreatePollForm() {
             </div>
             
             <div className="space-y-3">
-              {formData.options.map((option, index) => (
+              {options.map((option, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <Input
                     placeholder={`Option ${index + 1}`}
-                    value={option}
+                    value={option.text}
                     onChange={(e) => handleOptionChange(index, e.target.value)}
                     required={index < 2}
                   />

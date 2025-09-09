@@ -4,12 +4,18 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+/**
+ * The poll option type.
+ */
 interface PollOption {
   id: string
   text: string
   votes: number
 }
 
+/**
+ * The poll type.
+ */
 interface Poll {
   id: string
   title: string
@@ -20,15 +26,28 @@ interface Poll {
   createdBy: string
 }
 
+/**
+ * The properties for the poll card component.
+ */
 interface PollCardProps {
   poll: Poll
   onVote?: (pollId: string, optionId: string) => void
 }
 
+/**
+ * Renders a poll card component.
+ *
+ * @param poll - The poll to render.
+ * @param onVote - The function to call when the user votes.
+ * @returns The poll card component.
+ */
 export function PollCard({ poll, onVote }: PollCardProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [hasVoted, setHasVoted] = useState(false)
 
+  /**
+   * Handles the vote button click.
+   */
   const handleVote = () => {
     if (selectedOption && onVote) {
       onVote(poll.id, selectedOption)
@@ -36,6 +55,12 @@ export function PollCard({ poll, onVote }: PollCardProps) {
     }
   }
 
+  /**
+   * Gets the percentage of votes for an option.
+   *
+   * @param votes - The number of votes for the option.
+   * @returns The percentage of votes.
+   */
   const getPercentage = (votes: number) => {
     return poll.totalVotes > 0 ? Math.round((votes / poll.totalVotes) * 100) : 0
   }
