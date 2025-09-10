@@ -74,9 +74,9 @@ export async function createPoll(formData: CreatePollData) {
       return { success: false, error: "Failed to create poll options" };
     }
     
-+    // Invalidate the cached polls listing so the new poll appears immediately
-+    revalidatePath("/polls");
-+
+    // Invalidate the cached polls listing so the new poll appears immediately
+    revalidatePath("/polls");
+
     return { 
       success: true, 
       pollId: poll.id,
@@ -86,4 +86,30 @@ export async function createPoll(formData: CreatePollData) {
     console.error("Error in createPoll:", error);
     return { success: false, error: "An unexpected error occurred" };
   }
+}
+
+// Add a FormData-based Server Action wrapper for useActionState and <form action={...}>
+export async function createPollAction(
+  prevState: { error?: string } | undefined,
+  form: FormData
+) {
+  // Parse form data from the client form submission
+  const title = (form.get("title") as string | null)?.trim() || "";
+  const description = ((form.get("description") as string | null) || "").trim();
+  const options = (form.getAll("options") as string[]).map(o => o.trim()).filter(Boolean);
+
+  // Call the existing typed Server Action
+  const result = await createPoll({
+    title,
+    description: description || undefined,
+    options,
+  } as CreatePollData);
+
+  if (result?.success && result.pollId) {
+    // Redirect to the polls page on success (server-side navigation)
+    redirect("/polls");
+  }
+
+  // Return an error state for the client to render if something failed
+  return { error: result?.error || "Failed to create poll" };
 }
